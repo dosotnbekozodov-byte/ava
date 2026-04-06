@@ -57,7 +57,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup, KeyboardButton,
     Message, CallbackQuery, InputFile
 )
-import google.generativeai as genai
+import replicate
 
 # ==================== 🎨 LOGGING SETUP ====================
 

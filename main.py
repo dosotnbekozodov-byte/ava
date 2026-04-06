@@ -11,9 +11,6 @@ import os
 # Telegram
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# Google AI
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
 # Admin
 ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
 
@@ -58,7 +55,6 @@ from aiogram.types import (
     Message, CallbackQuery, InputFile
 )
 import replicate
-import google.generativeai as genai
 
 # ==================== 🎨 LOGGING SETUP ====================
 
@@ -448,9 +444,6 @@ class Database:
 
 # Initialize database
 db = Database()
-
-# Configure Google AI
-genai.configure(api_key=GOOGLE_API_KEY)
 
 # Initialize bot and dispatcher
 storage = MemoryStorage()

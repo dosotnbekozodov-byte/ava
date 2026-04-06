@@ -58,6 +58,7 @@ from aiogram.types import (
     Message, CallbackQuery, InputFile
 )
 import replicate
+import google.generativeai as genai
 
 # ==================== 🎨 LOGGING SETUP ====================
 

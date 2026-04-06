@@ -14,6 +14,9 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 # Google AI
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
+# Replicate
+REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+
 # Admin
 ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
 
@@ -772,8 +775,8 @@ async def style_selected(callback: CallbackQuery, state: FSMContext):
         Add appropriate styling, clothing, and background for this style.
         Make it vibrant and eye-catching."""
         
-        # Call Google AI API
-        generated_image = await generate_image_with_replicate(prompt)
+        # Call Replicate API
+        generated_image = await generate_image_with_replicate(photo_file_id, prompt)
         
         if generated_image:
             # Save image
@@ -866,6 +869,49 @@ async def generate_image_with_google_ai(image_url: str, prompt: str) -> Optional
         
     except Exception as e:
         logger.error(f"❌ Error in image generation: {e}")
+        return None
+
+async def generate_image_with_replicate(photo_file_id: str, style_prompt: str) -> Optional[bytes]:
+    """Generate image using Replicate's google/imagen-4 model"""
+    try:
+        # Configure Replicate client with API token
+        client = replicate.Client(api_token=REPLICATE_API_TOKEN)
+
+        # Get the photo URL from Telegram
+        photo_url = await get_photo_url(photo_file_id)
+        if not photo_url:
+            logger.error("❌ Could not retrieve photo URL for Replicate")
+            return None
+
+        # Run the google/imagen-4 model
+        output = await asyncio.to_thread(
+            client.run,
+            "google/imagen-4",
+            input={
+                "prompt": style_prompt,
+                "image": photo_url,
+            }
+        )
+
+        # output is a URL string pointing to the generated image
+        image_url = output if isinstance(output, str) else (output[0] if output else None)
+        if not image_url:
+            logger.error("❌ Replicate returned no output URL")
+            return None
+
+        # Download the generated image bytes
+        async with aiohttp.ClientSession() as session:
+            async with session.get(image_url) as resp:
+                if resp.status != 200:
+                    logger.error(f"❌ Failed to download generated image: HTTP {resp.status}")
+                    return None
+                image_bytes = await resp.read()
+
+        logger.info("✅ Image generated successfully via Replicate")
+        return image_bytes
+
+    except Exception as e:
+        logger.error(f"❌ Error in Replicate image generation: {e}")
         return None
 
 # ==================== 👥 REFERRAL SYSTEM ====================

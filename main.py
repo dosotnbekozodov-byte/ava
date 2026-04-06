@@ -786,8 +786,18 @@ high detail skin, studio lighting
     except Exception as e:
         logger.error(f"❌ Error generating image: {e}")
         await callback.message.edit_text("❌ Xatolik yuz berdi")
-        await state.clear())
+        await state.clear()
 
+@dp.message(F.text == "👥 Referral")
+async def referral_menu(message: Message):
+    """Show referral menu"""
+    user_id = message.from_user.id
+    user = db.get_user(user_id)
+    referral_count = user['referral_count'] if user else 0
+    bot_username = (await bot.get_me()).username
+    referral_link = f"https://t.me/{bot_username}?start={user_id}"
+
+    referral_text = f"""
 ╔════════════════════════════════════╗
 ║    👥 REFERRAL SISTEMA 👥          ║
 ╚════════════════════════════════════╝
@@ -1166,7 +1176,7 @@ async def user_statistics(message: Message):
 • Davom: {user['streak']} kun
 
 💎 VIP:
-• Status: {'✅ Faol' if user['is_vip'] else '❌ Yo\'q'}
+• Status: {'✅ Faol' if user['is_vip'] else "❌ Yo'q"}
 • Expire: {user['vip_expire_date'] if user['is_vip'] else 'N/A'}
 """
     

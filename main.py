@@ -6,35 +6,32 @@ Theme: AI Profile Photo & Avatar Generation with Premium System
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
-# ==================== 🔐 CONFIGURATION SECTION ====================
-# ⚠️  REPLACE THESE VALUES WITH YOUR OWN BEFORE DEPLOYING
-# ⚠️  KEEP THESE VARIABLES AT THE TOP FOR EASY ACCESS
+import os
 
-# Telegram Bot Token (Get from @BotFather)
-BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"
+# Telegram
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-# Google AI Studio API Key (Get from ai.google.dev)
-GOOGLE_API_KEY = "YOUR_GOOGLE_API_KEY_HERE"
+# Google AI
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-# Admin User ID (Your telegram ID - use @userinfobot to get it)
-ADMIN_ID = 123456789
+# Admin
+ADMIN_ID = int(os.getenv("ADMIN_ID", 0))
 
-# VIP Subscription Settings
-VIP_PRICE = 30000  # 30,000 UZS
-VIP_CARD_NUMBER = "9860 1234 5678 9012"
-VIP_CARD_NAME = "JOHN DOE"
-VIP_PHONE_NUMBER = "+998 90 123-45-67"
-VIP_DAYS = 30
+# VIP
+VIP_PRICE = int(os.getenv("VIP_PRICE", 30000))
+VIP_CARD_NUMBER = os.getenv("VIP_CARD_NUMBER", "")
+VIP_CARD_NAME = os.getenv("VIP_CARD_NAME", "")
+VIP_PHONE_NUMBER = os.getenv("VIP_PHONE_NUMBER", "")
+VIP_DAYS = int(os.getenv("VIP_DAYS", 30))
 
-# Channel IDs (For broadcasts and notifications)
-CHANNEL_ID = -1001234567890  # Main channel for broadcasts
-LOG_CHANNEL_ID = -1001234567891  # Channel for logs and payment notifications
+# Channels
+CHANNEL_ID = int(os.getenv("CHANNEL_ID", 0))
+LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", 0))
 
-# Bot Settings
-MAX_DAILY_FREE_GENERATIONS = 1
-MAX_MESSAGE_LENGTH = 4096
-COOLDOWN_SECONDS = 2
-ANTI_SPAM_COOLDOWN = 5
+# Limits
+MAX_DAILY_FREE_GENERATIONS = int(os.getenv("MAX_DAILY_FREE_GENERATIONS", 1))
+COOLDOWN_SECONDS = int(os.getenv("COOLDOWN_SECONDS", 2))
+ANTI_SPAM_COOLDOWN = int(os.getenv("ANTI_SPAM_COOLDOWN", 5))
 
 # ==================== END CONFIGURATION SECTION ====================
 

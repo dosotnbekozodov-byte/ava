@@ -5,4 +5,4 @@ sqlalchemy
 python-dotenv
 aiohttp
 aiogram
-google-generativeai
+replicate

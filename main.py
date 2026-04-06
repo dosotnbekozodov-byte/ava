@@ -603,7 +603,6 @@ async def start_handler(message: Message, state: FSMContext):
                     pass
     
     # Welcome message
-    welcome_text = f"""
 welcome_text = f"""
 ✨ <b>AI AVATAR GENERATOR</b> ✨
 
@@ -616,14 +615,12 @@ Salom <b>{full_name}</b> 👋
 💎 Premium mavjud  
 👥 Do‘st taklif qilib bonus oling
 """
-    
-    await message.answer(
-        welcome_text,
-        reply_markup=get_main_keyboard(user_id)
-    )
-    
-    logger.info(f"✅ User started bot: {user_id} (@{username})")
 
+await message.answer(
+    welcome_text,
+    reply_markup=get_main_keyboard(user_id)
+)
+    
 @dp.message(Command("help"))
 async def help_handler(message: Message):
     """Handle /help command"""

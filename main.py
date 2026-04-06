@@ -775,7 +775,7 @@ async def style_selected(callback: CallbackQuery, state: FSMContext):
         Make it vibrant and eye-catching."""
         
         # Call Google AI API
-        generated_image = await generate_image_with_google_ai(image_url, prompt)
+        generated_image = await generate_image_with_replicate(prompt)
         
         if generated_image:
             # Save image

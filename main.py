@@ -604,24 +604,17 @@ async def start_handler(message: Message, state: FSMContext):
     
     # Welcome message
     welcome_text = f"""
-╔══════════════════════════════════════╗
-║   🎨 AI AVATAR GENERATION BOT 🎨    ║
-║                                      ║
-║  Salom {full_name}! 👋              ║
-║                                      ║
-║  Siz eng yangi AI avatar generatori  ║
-║  botiga xush kelibsiz!               ║
-║                                      ║
-║  🚀 Boshla:                          ║
-║  - Rasmingizni yuklang               ║
-║  - Stil tanla                        ║
-║  - Natijaviy rasmni oling!           ║
-║                                      ║
-║  💎 Premium: Cheksiz imkoniyatlar    ║
-║  👥 Do'st taklif qil va bonus ol     ║
-╚══════════════════════════════════════╝
+welcome_text = f"""
+✨ <b>AI AVATAR GENERATOR</b> ✨
 
-Quyidagi xizmatlardan foydalaning:
+Salom <b>{full_name}</b> 👋
+
+📸 Rasm yuboring  
+🎨 Stil tanlang  
+🚀 Avatar oling  
+
+💎 Premium mavjud  
+👥 Do‘st taklif qilib bonus oling
 """
     
     await message.answer(

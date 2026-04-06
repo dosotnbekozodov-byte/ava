@@ -6,3 +6,4 @@ python-dotenv
 aiohttp
 aiogram
 replicate
+google-generativeai

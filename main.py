@@ -725,11 +725,10 @@ async def invalid_photo(message: Message):
 
 @dp.callback_query(UploadPhotoState.waiting_for_style, F.data.startswith("style_"))
 async def style_selected(callback: CallbackQuery, state: FSMContext):
-    """Handle style selection"""
     user_id = callback.from_user.id
     style_code = callback.data
-    
-    # Map style codes to names
+
+    # 🎨 Style mapping
     style_names = {
         "style_mafia": "Mafia Style",
         "style_rich_boy": "Rich Boy",
@@ -747,143 +746,55 @@ async def style_selected(callback: CallbackQuery, state: FSMContext):
         "style_gym": "Gym Boy",
         "style_gamer": "Gamer Style",
     }
-    
+
     style_name = style_names.get(style_code, "Unknown Style")
-    
-    # Save style to state
-    data = await state.get_data()
-    
+
     try:
         await callback.message.edit_text(
             f"⏳ {style_name} stilida rasm yaratilmoqda...\n"
-            "Iltimos, kutib turing, bu biroz vaqt oladi ⏱️"
+            "Iltimos, kuting ⏱️"
         )
-        
+
         await state.set_state(UploadPhotoState.generating)
-        
-        # Generate image using Google AI
-        photo_file_id = data.get('photo_file_id')
-        image_url = await get_photo_url(photo_file_id)
-        
-        # Create prompt for Google AI
-        prompt = f"""Transform this photo into a {style_name} style avatar. 
-        Make it look professional, artistic, and suitable for social media profile picture.
-        Keep the face recognizable but apply the {style_name} aesthetic strongly.
-        Add appropriate styling, clothing, and background for this style.
-        Make it vibrant and eye-catching."""
-        
-        # Call Google AI API
+
+        # 🔥 PROMPT (Replicate uchun)
+        prompt = f"""
+Ultra realistic {style_name} portrait, 8k quality,
+cinematic lighting, sharp focus, detailed face,
+professional profile photo, symmetrical face,
+high detail skin, studio lighting
+"""
+
+        # ✅ REPLICATE ishlatamiz
         generated_image = await generate_image_with_replicate(prompt)
-        
+
         if generated_image:
-            # Save image
-            image_bytes = generated_image
-            
-            # Log generation
             db.add_generation_log(user_id, style_name, "success")
             db.increment_generation_count(user_id)
-            
-            # Send generated image
+
             await callback.message.delete()
-            
+
             await bot.send_photo(
                 user_id,
-                InputFile(BytesIO(image_bytes), filename="avatar.png"),
-                caption=f"✨ {style_name} Avtari Tayyorlandi!\n\n"
-                        f"👑 Premium xususiyat: Watermark yo'q\n"
-                        f"💎 Cheksiz rasmlar yarating - VIP oling!"
+                InputFile(BytesIO(generated_image), filename="avatar.png"),
+                caption=f"✨ {style_name} avatari tayyor!\n\n💎 Premium bilan cheksiz yarating!"
             )
-            
-            await callback.message.answer(
-                "🎉 Rasm tayyor!\n\n"
-                "Yana bir rasm yasamoqchisiz?",
+
+            await bot.send_message(
+                user_id,
+                "🎉 Yana rasm yasaysizmi?",
                 reply_markup=get_main_keyboard(user_id)
             )
         else:
-            await callback.message.edit_text(
-                "❌ Rasmni yaratishda xato! \n"
-                "Iltimos, qayta urinib ko'ring"
-            )
-        
+            await callback.message.edit_text("❌ Xatolik yuz berdi")
+
         await state.clear()
-        
+
     except Exception as e:
         logger.error(f"❌ Error generating image: {e}")
-        await callback.message.edit_text(
-            "❌ Rasmni yaratishda xato!\n"
-            f"Xato: {str(e)[:100]}"
-        )
-        await state.clear()
+        await callback.message.edit_text("❌ Xatolik yuz berdi")
+        await state.clear())
 
-@dp.callback_query(F.data == "cancel_style")
-async def cancel_style(callback: CallbackQuery, state: FSMContext):
-    """Cancel style selection"""
-    await callback.message.delete()
-    await callback.message.answer(
-        "❌ Bekor qilindi",
-        reply_markup=get_main_keyboard(callback.from_user.id)
-    )
-    await state.clear()
-
-# ==================== 🌐 IMAGE GENERATION WITH GOOGLE AI ====================
-
-async def get_photo_url(file_id: str) -> str:
-    """Get photo URL from file_id"""
-    try:
-        file = await bot.get_file(file_id)
-        file_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file.file_path}"
-        return file_url
-    except Exception as e:
-        logger.error(f"❌ Error getting photo URL: {e}")
-        return None
-
-async def generate_image_with_google_ai(image_url: str, prompt: str) -> Optional[bytes]:
-    """Generate image using Google AI Gemini API"""
-    try:
-        # Download image from URL
-        async with aiohttp.ClientSession() as session:
-            async with session.get(image_url) as resp:
-                image_data = await resp.read()
-        
-        # Use Google AI to edit image
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        
-        # Create image part
-        image_part = {
-            "mime_type": "image/jpeg",
-            "data": image_data
-        }
-        
-        # Generate using vision capability
-        response = model.generate_content([prompt, image_part])
-        
-        # Note: This returns text, we need to use image editing instead
-        # For production, you'd want to use a dedicated image generation API
-        # For now, we'll return a placeholder
-        
-        logger.info(f"✅ Image generated successfully")
-        return image_data  # Return original for demo
-        
-    except Exception as e:
-        logger.error(f"❌ Error in image generation: {e}")
-        return None
-
-# ==================== 👥 REFERRAL SYSTEM ====================
-
-@dp.message(F.text == "👥 Do'stlar")
-async def referral_menu(message: Message):
-    """Show referral menu"""
-    user_id = message.from_user.id
-    user = db.get_user(user_id)
-    
-    if not user:
-        await message.answer("❌ Profil topilmadi")
-        return
-    
-    referral_count = user['referral_count']
-    referral_link = f"https://t.me/{(await bot.get_me()).username}?start={user_id}"
-    
-    referral_text = f"""
 ╔════════════════════════════════════╗
 ║    👥 REFERRAL SISTEMA 👥          ║
 ╚════════════════════════════════════╝
